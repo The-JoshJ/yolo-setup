@@ -23,12 +23,34 @@ No installation required. The CLI will walk you through:
 4. **Secrets** — if any API keys or tokens are needed, you'll be prompted to paste them securely (input is hidden, values never logged)
 5. **Server** — the dev server starts automatically once setup is complete
 
+## Flags
+
+| Flag | Description |
+|---|---|
+| `--heal [dir]` | Skip setup and send a repair agent into an existing repo directory to diagnose and fix whatever is broken |
+| `--debug` | Show raw agent output — full tool calls, session info, and the prompt sent to the agent |
+
+### Heal mode
+
+If a setup failed partway through or the dev server won't start, run the repair agent against the existing directory:
+
+```bash
+# Pass the directory inline
+npx github:The-JoshJ/yolo-setup --heal ~/Documents/GitHub/my-repo
+
+# Or let it prompt you
+npx github:The-JoshJ/yolo-setup --heal
+```
+
+The heal agent inspects the current state of the repo, identifies what's wrong, fixes it, and hands off to the dev server — same as a normal setup run.
+
 ### Debug mode
 
-To see the full agent output (raw tool calls, prompts, session info):
+Shows the full unfiltered agent output including tool calls, session name, manifest paths, and the exact prompt sent to Copilot:
 
 ```bash
 npx github:The-JoshJ/yolo-setup --debug
+npx github:The-JoshJ/yolo-setup --heal ~/Documents/GitHub/my-repo --debug
 ```
 
 ## How it works
@@ -43,5 +65,6 @@ Secrets are handled safely: the agent never sees secret values. It identifies wh
 git clone https://github.com/The-JoshJ/yolo-setup
 cd yolo-setup
 npm install
-npm start
+npm start        # run from source with tsx
+npm run build    # bundle to dist/cli.cjs
 ```
