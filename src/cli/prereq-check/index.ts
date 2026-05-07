@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import os from 'os';
 import path from 'path';
 import fs from 'fs/promises';
+import { confirm } from '@inquirer/prompts';
 
 interface ToolStatus {
   name: string;
@@ -102,7 +103,9 @@ export async function checkPrerequisites(): Promise<void> {
       console.error(chalk.red('  ❌ git not found. Please install Homebrew first: https://brew.sh'));
       process.exit(1);
     }
-    console.log(chalk.yellow('  Installing git via Homebrew...'));
+    const ok = await confirm({ message: '  git is not installed. Install it now via Homebrew?', default: true });
+    if (!ok) { console.error(chalk.red('  git is required. Exiting.')); process.exit(1); }
+    console.log(chalk.yellow('\n  Installing git via Homebrew...'));
     try {
       await execa('brew', ['install', 'git'], { stdio: 'inherit' });
       console.log(chalk.green('  ✅ git installed successfully'));
@@ -117,7 +120,9 @@ export async function checkPrerequisites(): Promise<void> {
       console.error(chalk.red('  ❌ gh not found. Please install Homebrew first: https://brew.sh'));
       process.exit(1);
     }
-    console.log(chalk.yellow('  Installing gh (GitHub CLI) via Homebrew...'));
+    const ok = await confirm({ message: '  GitHub CLI (gh) is not installed. Install it now via Homebrew?', default: true });
+    if (!ok) { console.error(chalk.red('  gh is required. Exiting.')); process.exit(1); }
+    console.log(chalk.yellow('\n  Installing gh (GitHub CLI) via Homebrew...'));
     try {
       await execa('brew', ['install', 'gh'], { stdio: 'inherit' });
       console.log(chalk.green('  ✅ gh installed successfully'));
@@ -128,7 +133,9 @@ export async function checkPrerequisites(): Promise<void> {
   }
 
   if (!nvm.installed) {
-    console.log(chalk.yellow('  Installing nvm...'));
+    const ok = await confirm({ message: '  nvm is not installed. Install it now?', default: true });
+    if (!ok) { console.error(chalk.red('  nvm is required. Exiting.')); process.exit(1); }
+    console.log(chalk.yellow('\n  Installing nvm...'));
     try {
       await execa('bash', [
         '-c',
@@ -153,14 +160,16 @@ export async function checkPrerequisites(): Promise<void> {
   }
 
   if (!copilot.installed) {
-    console.error(chalk.red('  ❌ copilot CLI not found.'));
-    console.error(chalk.red('     Install from: https://github.com/github/copilot-cli'));
+    console.error(chalk.red('  ❌ GitHub Copilot CLI not found.'));
+    console.error(chalk.red('     Install from: https://docs.github.com/en/copilot/using-github-copilot/using-github-copilot-in-the-command-line'));
     process.exit(1);
   }
 
   const isAuthed = await checkGhAuth();
   if (!isAuthed) {
-    console.log(chalk.yellow('\n  gh is not authenticated. Starting login flow...'));
+    const ok = await confirm({ message: '  gh is not authenticated. Run gh auth login now?', default: true });
+    if (!ok) { console.error(chalk.red('  gh authentication is required. Exiting.')); process.exit(1); }
+    console.log(chalk.yellow('\n  Starting gh login flow...'));
     try {
       await execa('gh', ['auth', 'login'], { stdio: 'inherit' });
       const authedNow = await checkGhAuth();

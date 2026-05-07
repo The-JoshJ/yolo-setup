@@ -21026,7 +21026,12 @@ async function checkPrerequisites() {
       console.error(source_default.red("  \u274C git not found. Please install Homebrew first: https://brew.sh"));
       process.exit(1);
     }
-    console.log(source_default.yellow("  Installing git via Homebrew..."));
+    const ok = await esm_default4({ message: "  git is not installed. Install it now via Homebrew?", default: true });
+    if (!ok) {
+      console.error(source_default.red("  git is required. Exiting."));
+      process.exit(1);
+    }
+    console.log(source_default.yellow("\n  Installing git via Homebrew..."));
     try {
       await execa("brew", ["install", "git"], { stdio: "inherit" });
       console.log(source_default.green("  \u2705 git installed successfully"));
@@ -21040,7 +21045,12 @@ async function checkPrerequisites() {
       console.error(source_default.red("  \u274C gh not found. Please install Homebrew first: https://brew.sh"));
       process.exit(1);
     }
-    console.log(source_default.yellow("  Installing gh (GitHub CLI) via Homebrew..."));
+    const ok = await esm_default4({ message: "  GitHub CLI (gh) is not installed. Install it now via Homebrew?", default: true });
+    if (!ok) {
+      console.error(source_default.red("  gh is required. Exiting."));
+      process.exit(1);
+    }
+    console.log(source_default.yellow("\n  Installing gh (GitHub CLI) via Homebrew..."));
     try {
       await execa("brew", ["install", "gh"], { stdio: "inherit" });
       console.log(source_default.green("  \u2705 gh installed successfully"));
@@ -21050,7 +21060,12 @@ async function checkPrerequisites() {
     }
   }
   if (!nvm.installed) {
-    console.log(source_default.yellow("  Installing nvm..."));
+    const ok = await esm_default4({ message: "  nvm is not installed. Install it now?", default: true });
+    if (!ok) {
+      console.error(source_default.red("  nvm is required. Exiting."));
+      process.exit(1);
+    }
+    console.log(source_default.yellow("\n  Installing nvm..."));
     try {
       await execa("bash", [
         "-c",
@@ -21073,13 +21088,18 @@ async function checkPrerequisites() {
     }
   }
   if (!copilot.installed) {
-    console.error(source_default.red("  \u274C copilot CLI not found."));
-    console.error(source_default.red("     Install from: https://github.com/github/copilot-cli"));
+    console.error(source_default.red("  \u274C GitHub Copilot CLI not found."));
+    console.error(source_default.red("     Install from: https://docs.github.com/en/copilot/using-github-copilot/using-github-copilot-in-the-command-line"));
     process.exit(1);
   }
   const isAuthed = await checkGhAuth();
   if (!isAuthed) {
-    console.log(source_default.yellow("\n  gh is not authenticated. Starting login flow..."));
+    const ok = await esm_default4({ message: "  gh is not authenticated. Run gh auth login now?", default: true });
+    if (!ok) {
+      console.error(source_default.red("  gh authentication is required. Exiting."));
+      process.exit(1);
+    }
+    console.log(source_default.yellow("\n  Starting gh login flow..."));
     try {
       await execa("gh", ["auth", "login"], { stdio: "inherit" });
       const authedNow = await checkGhAuth();
