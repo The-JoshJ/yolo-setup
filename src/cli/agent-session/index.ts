@@ -257,20 +257,84 @@ Be specific about what went wrong and what was tried.
 `;
 }
 
+function buildHealPrompt(repoDir: string, sessionName: string): string {
+  const manifestPath = secretsManifestPath(sessionName);
+  return `You are a repair agent for the YOLO Setup tool. A previous setup attempt for the repository at ${repoDir} has failed or left the environment in a broken state. Your job is to diagnose and fix the problem so the developer can start working.
+
+IMPORTANT: All output must be plain text only. Do not use markdown formatting, headers (##), bold (**text**), bullet points, or code fences. This output renders directly in a terminal.
+
+Before every tool call, print a single plain-text line describing what you are about to do.
+
+## Context
+- Repo directory: ${repoDir}
+- Session name: ${sessionName}
+- Secrets manifest path: ${manifestPath}
+
+## Your Task
+
+### Step 1: Diagnose
+Check the state of the repo:
+- Read package.json to find available npm scripts
+- Check if node_modules exists and is populated
+- Check if .env.local exists
+- Try running the dev server and capture the error output
+
+### Step 2: Fix
+Based on what you find, fix the issues. Common problems:
+- Wrong start script name — check package.json scripts and use the correct one
+- Missing node_modules — run npm install
+- Missing .env.local — copy from .env.staging or .env.example
+- Missing secrets or empty env vars — use the secrets manifest flow below
+- Node version mismatch — source ~/.nvm/nvm.sh && nvm use
+
+### Step 3: Handle any missing secrets
+Same protocol as setup — if any required env var is missing or empty, write a JSON manifest:
+${manifestPath}
+Format: { "session": "${sessionName}", "secrets": [{ "name": "VAR", "instructions": "..." }] }
+Then exit immediately. DO NOT attempt to source or extract secrets from any file.
+DO NOT prompt directly. If a secret is missing, manifest and exit — no exceptions.
+
+### Step 4: Start and hand off
+Once fixed, identify the correct start command and port. Write:
+${startManifestPath(sessionName)}
+Format: { "command": "npm run start:local", "port": 3000 }
+Do NOT start the server yourself. Print a plain-text summary of what was fixed, then exit.
+
+### On failure
+If you cannot fix the issue after reasonable attempts, clearly describe what is broken and what was tried.
+`;
+}
+
 export async function runAgentSession(
   repoUrl: string,
   repoDir: string,
   sourceDir: string,
   debug = false,
 ): Promise<void> {
+  await _runSession(repoDir, sourceDir, debug, (sessionName) =>
+    buildAgentPrompt(repoUrl, repoDir, sessionName),
+  );
+}
+
+export async function runHealSession(repoDir: string, debug = false): Promise<void> {
+  await _runSession(repoDir, path.dirname(repoDir), debug, (sessionName) =>
+    buildHealPrompt(repoDir, sessionName),
+  );
+}
+
+async function _runSession(
+  repoDir: string,
+  sourceDir: string,
+  debug: boolean,
+  buildPrompt: (sessionName: string) => string,
+): Promise<void> {
   await writeCollectScript();
 
   const sessionName = generateSessionName();
   const manifestPath = secretsManifestPath(sessionName);
+  const prompt = buildPrompt(sessionName);
 
   console.log(chalk.bold(`\n  🤖 Starting agent session: ${chalk.cyan(sessionName)}\n`));
-
-  const prompt = buildAgentPrompt(repoUrl, repoDir, sessionName);
 
   if (debug) {
     console.log(chalk.magenta('[debug] Session name:'), sessionName);
