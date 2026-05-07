@@ -13,7 +13,7 @@ function expandHome(p: string): string {
 
 async function checkWritePermission(dir: string): Promise<boolean> {
   try {
-    const testFile = path.join(dir, '.pit-write-test');
+    const testFile = path.join(dir, '.yolo-write-test');
     await fs.writeFile(testFile, '');
     await fs.unlink(testFile);
     return true;

@@ -1,13 +1,13 @@
 #!/bin/bash
-# PIT secrets collector — reads a JSON manifest written by the agent,
+# YOLO Setup secrets collector — reads a JSON manifest written by the agent,
 # collects values from the human, writes to a temp env file, then resumes the session.
 # The agent never sees the values. Values never touch dotfiles.
 set -euo pipefail
 
 SESSION_NAME="$1"
-PIT_DIR="$HOME/.pit"
-MANIFEST="$PIT_DIR/secrets-manifest-${SESSION_NAME}.json"
-ENV_FILE="$PIT_DIR/secrets-${SESSION_NAME}.env"
+YOLO_DIR="$HOME/.yolo"
+MANIFEST="$YOLO_DIR/secrets-manifest-${SESSION_NAME}.json"
+ENV_FILE="$YOLO_DIR/secrets-${SESSION_NAME}.env"
 
 if [ ! -f "$MANIFEST" ]; then
   echo "No secrets manifest found at $MANIFEST"

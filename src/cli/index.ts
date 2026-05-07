@@ -1,4 +1,3 @@
-#!/usr/bin/env tsx
 import chalk from 'chalk';
 import { checkPrerequisites } from './prereq-check/index.js';
 import { getRepoInput } from './repo-input/index.js';
@@ -20,7 +19,7 @@ async function main() {
   const debug = process.argv.includes('--debug');
 
   console.log(chalk.cyan(BANNER));
-  console.log(chalk.bold('  Welcome to PIT Setup\n'));
+  console.log(chalk.bold('  Welcome to YOLO Setup\n'));
   if (debug) console.log(chalk.magenta('  [debug] Debug mode enabled\n'));
 
   // Step 1: Check system prerequisites

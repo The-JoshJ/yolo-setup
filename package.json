@@ -1,15 +1,16 @@
 {
-  "name": "@acme/pit",
+  "name": "@acme/yolo-setup",
   "version": "0.1.0",
-  "description": "PIT Setup CLI - automated developer onboarding",
+  "description": "YOLO Setup CLI - automated developer onboarding",
   "type": "module",
   "main": "src/cli/index.ts",
   "bin": {
-    "pit": "src/cli/index.ts"
+    "yolo": "dist/cli.cjs"
   },
   "scripts": {
     "start": "tsx src/cli/index.ts",
-    "build": "tsc",
+    "build": "esbuild src/cli/index.ts --bundle --platform=node --format=cjs --outfile=dist/cli.cjs --banner:js='#!/usr/bin/env node' --external:fsevents",
+    "prepare": "npm run build",
     "dev": "tsx watch src/cli/index.ts"
   },
   "dependencies": {
@@ -27,6 +28,7 @@
     "@eslint/js": "^10.0.1",
     "@types/figlet": "^1.7.0",
     "@types/node": "^22.19.17",
+    "esbuild": "^0.28.0",
     "eslint": "^10.3.0",
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.59.2"

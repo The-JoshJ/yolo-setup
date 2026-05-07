@@ -54,8 +54,8 @@ Collect ALL missing secrets in a single script — do not generate one script pe
 
 **If any secrets are missing:**
 
-1. Write a collection script to `~/.pit/get-secrets-<SESSION_NAME>.sh`
-2. Write collected values to a temp env file: `~/.pit/secrets-<SESSION_NAME>.env`
+1. Write a collection script to `~/.yolo/get-secrets-<SESSION_NAME>.sh`
+2. Write collected values to a temp env file: `~/.yolo/secrets-<SESSION_NAME>.env`
 3. The script MUST follow this exact structure:
 
 ```bash
@@ -69,20 +69,20 @@ echo "  1. <Step-by-step human instructions>"
 echo "  2. ..."
 read -s -p "Paste <VAR_NAME>: " VALUE_VAR
 echo ""
-echo "<VAR_NAME>=$VALUE_VAR" >> ~/.pit/secrets-<SESSION_NAME>.env
+echo "<VAR_NAME>=$VALUE_VAR" >> ~/.yolo/secrets-<SESSION_NAME>.env
 
 # Repeat for each missing secret...
 
 # Self-delete before resuming
-rm -f ~/.pit/get-secrets-<SESSION_NAME>.sh
+rm -f ~/.yolo/get-secrets-<SESSION_NAME>.sh
 
 echo "Got it! Looping the agent back in..."
 
 # Resume this exact session
-copilot --resume="<SESSION_NAME>" --allow-all -p "Secrets have been written to ~/.pit/secrets-<SESSION_NAME>.env in KEY=VALUE format. Apply them using shell commands only — DO NOT read or print the file contents. To make them available for install: source ~/.pit/secrets-<SESSION_NAME>.env. Write specific values to .env.local using shell redirection. Delete the file when done: rm -f ~/.pit/secrets-<SESSION_NAME>.env. Continue setup from where you left off."
+copilot --resume="<SESSION_NAME>" --allow-all -p "Secrets have been written to ~/.yolo/secrets-<SESSION_NAME>.env in KEY=VALUE format. Apply them using shell commands only — DO NOT read or print the file contents. To make them available for install: source ~/.yolo/secrets-<SESSION_NAME>.env. Write specific values to .env.local using shell redirection. Delete the file when done: rm -f ~/.yolo/secrets-<SESSION_NAME>.env. Continue setup from where you left off."
 ```
 
-4. Make it executable: `chmod +x ~/.pit/get-secrets-<SESSION_NAME>.sh`
+4. Make it executable: `chmod +x ~/.yolo/get-secrets-<SESSION_NAME>.sh`
 5. **Exit immediately** — do NOT attempt installation before secrets are collected
 
 **Rules:**
@@ -90,10 +90,10 @@ copilot --resume="<SESSION_NAME>" --allow-all -p "Secrets have been written to ~
 - NEVER read or print the contents of the secrets env file in this conversation
 - NEVER include secret values in this conversation
 - Use `read -s` (silent) for all secret collection — always follow with `echo ""`
-- Write values to `~/.pit/secrets-<SESSION_NAME>.env` in KEY=VALUE format
+- Write values to `~/.yolo/secrets-<SESSION_NAME>.env` in KEY=VALUE format
 - DO NOT export values to the shell or append to any dotfile (~/.zshrc, ~/.bashrc, etc.)
-- Apply secrets via `source ~/.pit/secrets-<SESSION_NAME>.env` in shell commands only
-- Delete the secrets env file after use: `rm -f ~/.pit/secrets-<SESSION_NAME>.env`
+- Apply secrets via `source ~/.yolo/secrets-<SESSION_NAME>.env` in shell commands only
+- Delete the secrets env file after use: `rm -f ~/.yolo/secrets-<SESSION_NAME>.env`
 
 ### Step 4: Install dependencies
 
